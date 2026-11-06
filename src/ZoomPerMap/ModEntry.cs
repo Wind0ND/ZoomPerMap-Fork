@@ -20,6 +20,7 @@ public class ModEntry : Mod
     // [patch] state used by the continuous zoom tracker
     private string? trackedLocationName;
     private float lastKnownDesiredBaseZoom;
+    private int saveCountdown;
 
     /// <summary>The upstream mod this fork backports from.</summary>
     private const string UpstreamId = "DecidedlyHuman.ZoomPerMap";
@@ -47,6 +48,7 @@ public class ModEntry : Mod
         helper.Events.GameLoop.GameLaunched += this.GameLoopOnGameLaunched;
         helper.Events.GameLoop.SaveLoaded += this.GameLoopOnSaveLoaded;
         helper.Events.GameLoop.UpdateTicked += this.GameLoopOnUpdateTicked; // [patch]
+        helper.Events.GameLoop.ReturnedToTitle += this.GameLoopOnReturnedToTitle; // [patch]
 
         Harmony harmony = new Harmony(this.ModManifest.UniqueID);
         harmony.Patch(
@@ -161,6 +163,11 @@ public class ModEntry : Mod
     // [patch] remembers a zoom change even if the player never opens the game menu
     private void GameLoopOnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
+        if (this.saveCountdown > 0 && --this.saveCountdown == 0)
+        {
+            this.Helper.WriteConfig(this.config);
+        }
+
         if (!Context.IsWorldReady || Game1.currentLocation is null || !e.IsMultipleOf(6u))
             return;
 
@@ -181,6 +188,16 @@ public class ModEntry : Mod
         {
             this.RememberCurrentLocationZoom(desiredZoom);
             this.SyncZoomTracker();
+        }
+    }
+
+    // [patch]
+    private void GameLoopOnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
+    {
+        if (this.saveCountdown > 0)
+        {
+            this.saveCountdown = 0;
+            this.Helper.WriteConfig(this.config);
         }
     }
 
@@ -225,7 +242,7 @@ public class ModEntry : Mod
         }
 
         this.config.zoomLevels[locationName] = zoom;
-        this.Helper.WriteConfig(this.config);
+        this.saveCountdown = 90;
     }
 
     private static float GetZoomForLocation(GameLocation location)
