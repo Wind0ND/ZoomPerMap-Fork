@@ -1,0 +1,6 @@
+{
+  "settings.default-outdoor-zoom": "默认室外缩放级别",
+  "settings.default-indoor-zoom": "默认室内缩放级别",
+  "settings.default-mine-zoom": "默认矿井缩放级别",
+  "settings.default-event-zoom": "默认事件缩放级别"
+}
