@@ -7,7 +7,7 @@
   "$schema": "https://smapi.io/schemas/manifest.json",
   "Name": "Zoom Per Map (Fork)",
   "Author": "DecidedlyHuman & win0nd",
-  "Version": "1.0.0",
+  "Version": "1.0.5",
   "Description": "Remembers the zoom level you set in each map, and switches to that zoom level when you enter it. Fork of DecidedlyHuman's Zoom Per Map that also remembers zoom changes made without opening the menu. Disables itself automatically once the original mod is updated past the version this fork was built against.",
   "UniqueID": "win0nd.ZoomPerMap",
   "EntryDll": "ZoomPerMap.dll",
